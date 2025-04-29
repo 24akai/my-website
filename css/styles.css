@@ -1,0 +1,92 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 200px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.output {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.brand-block {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.brand-block h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.model-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.model-item {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #007BFF;
+    cursor: pointer;
+}
+
+.model-item:hover {
+    text-decoration: underline;
+}
+
+.car-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0 20px;
+}
+
+.car-list li {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.car-list img {
+    display: block;
+    margin-top: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
