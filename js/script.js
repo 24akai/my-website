@@ -20,10 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 imageContainer.innerHTML = ''; // Clear previous content
+                const sortedKeys = Object.keys(data).sort(); // Sort keys alphabetically
+
                 const carGroups = {};
 
                 // Group cars by their brand, model, and year
-                for (const [key, value] of Object.entries(data)) {
+                sortedKeys.forEach(key => {
                     const [carBrand, carModel, carYear] = key.split('/'); // Extract brand, model, and year
                     if (!carGroups[carBrand]) {
                         carGroups[carBrand] = {};
@@ -34,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!carGroups[carBrand][carModel][carYear]) {
                         carGroups[carBrand][carModel][carYear] = [];
                     }
-                    carGroups[carBrand][carModel][carYear].push(value);
-                }
+                    carGroups[carBrand][carModel][carYear].push(data[key]);
+                });
 
                 // Create a block for each car brand
                 for (const [brand, models] of Object.entries(carGroups)) {
@@ -44,28 +46,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const brandTitle = document.createElement('h3');
                     brandTitle.textContent = brand;
-                    brandTitle.style.cursor = 'pointer';
+                    brandTitle.classList.add('brand-title');
                     brandBlock.appendChild(brandTitle);
 
-                    const modelList = document.createElement('ul');
+                    const modelList = document.createElement('div');
                     modelList.classList.add('model-list');
                     modelList.style.display = 'none'; // Initially hidden
 
                     for (const [model, years] of Object.entries(models)) {
-                        const modelItem = document.createElement('li');
-                        modelItem.textContent = model;
-                        modelItem.classList.add('model-item');
-                        modelItem.style.cursor = 'pointer';
+                        const modelBlock = document.createElement('div');
+                        modelBlock.classList.add('model-block');
 
-                        const yearList = document.createElement('ul');
+                        const modelTitle = document.createElement('h4');
+                        modelTitle.textContent = model;
+                        modelTitle.classList.add('model-title');
+                        modelBlock.appendChild(modelTitle);
+
+                        const yearList = document.createElement('div');
                         yearList.classList.add('year-list');
                         yearList.style.display = 'none'; // Initially hidden
 
                         for (const [year, images] of Object.entries(years)) {
-                            const yearItem = document.createElement('li');
-                            yearItem.textContent = year;
-                            yearItem.classList.add('year-item');
-                            yearItem.style.cursor = 'pointer';
+                            const yearBlock = document.createElement('div');
+                            yearBlock.classList.add('year-block');
+
+                            const yearTitle = document.createElement('h5');
+                            yearTitle.textContent = year;
+                            yearTitle.classList.add('year-title');
+                            yearBlock.appendChild(yearTitle);
 
                             const imageList = document.createElement('div');
                             imageList.classList.add('image-list');
@@ -80,20 +88,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 imageList.appendChild(img);
                             });
 
-                            yearItem.addEventListener('click', function() {
+                            yearTitle.addEventListener('click', function() {
                                 imageList.style.display = imageList.style.display === 'none' ? 'block' : 'none';
                             });
 
-                            yearItem.appendChild(imageList);
-                            yearList.appendChild(yearItem);
+                            yearBlock.appendChild(imageList);
+                            yearList.appendChild(yearBlock);
                         }
 
-                        modelItem.addEventListener('click', function() {
+                        modelTitle.addEventListener('click', function() {
                             yearList.style.display = yearList.style.display === 'none' ? 'block' : 'none';
                         });
 
-                        modelItem.appendChild(yearList);
-                        modelList.appendChild(modelItem);
+                        modelBlock.appendChild(yearList);
+                        modelList.appendChild(modelBlock);
                     }
 
                     brandTitle.addEventListener('click', function() {
@@ -105,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                outputField.textContent = 'Error: ' + error.message;
+                imageContainer.textContent = 'Error: ' + error.message;
             });
     });
 });

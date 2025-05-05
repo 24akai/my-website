@@ -49,10 +49,33 @@ button:hover {
     background-color: #f9f9f9;
 }
 
-.brand-block h3 {
-    margin: 0 0 10px;
-    font-size: 20px;
+.brand-block, .model-block, .year-block {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+}
+
+.brand-title, .model-title, .year-title {
+    font-weight: bold;
+    margin: 0;
+    cursor: pointer;
+}
+
+.brand-title {
+    font-size: 1.5em;
     color: #333;
+}
+
+.model-title {
+    font-size: 1.3em;
+    color: #555;
+}
+
+.year-title {
+    font-size: 1.1em;
+    color: #777;
 }
 
 .model-list {
@@ -89,4 +112,17 @@ button:hover {
     margin-top: 5px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.image-list img {
+    display: inline-block;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.image-list img:hover {
+    transform: scale(1.1);
+    border-color: #aaa;
 }
