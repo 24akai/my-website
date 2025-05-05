@@ -1,119 +1,144 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const inputField = document.getElementById('textInput');
-    const outputField = document.getElementById('outputField');
-    const imageContainer = document.getElementById('imageContainer');
-    const button = document.getElementById('submitButton');
-    const fetchButton = document.getElementById('fetchButton');
+document.addEventListener('DOMContentLoaded', function () {
+    const output = document.getElementById('outputField');
+    const topSection = document.createElement('div'); // Верхня секція для вибору марки
+    const middleSection = document.createElement('div'); // Середня секція для вибору моделей
+    const yearSection = document.createElement('div'); // Секція для вибору років
+    const bottomSection = document.createElement('div'); // Нижня секція для відображення фото
+    output.appendChild(topSection);
+    output.appendChild(middleSection);
+    output.appendChild(yearSection);
+    output.appendChild(bottomSection);
 
-    button.addEventListener('click', function() {
-        const inputText = inputField.value;
-        outputField.textContent = inputText;
-    });
+    // Fetch data from sample.json on page load
+    fetch('js/image_sources.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Process the data and display brands
+            const parsedData = parseData(data);
+            showBrands(parsedData);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            bottomSection.innerHTML = `<p style="color: red;">Не вдалося завантажити дані. Перевірте файл sample.json.</p>`;
+        });
 
-    fetchButton.addEventListener('click', function() {
-        fetch('js/sample.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch JSON');
-                }
-                return response.json();
-            })
-            .then(data => {
-                imageContainer.innerHTML = ''; // Clear previous content
-                const sortedKeys = Object.keys(data).sort(); // Sort keys alphabetically
+    // Parse the JSON data into a structured format
+    function parseData(data) {
+        const structuredData = {};
 
-                const carGroups = {};
+        Object.keys(data).forEach(key => {
+            const [brand, model, year, photo] = key.split('/');
+            if (!structuredData[brand]) {
+                structuredData[brand] = {};
+            }
+            if (!structuredData[brand][model]) {
+                structuredData[brand][model] = {};
+            }
+            if (!structuredData[brand][model][year]) {
+                structuredData[brand][model][year] = [];
+            }
+            structuredData[brand][model][year].push(data[key]);
+        });
 
-                // Group cars by their brand, model, and year
-                sortedKeys.forEach(key => {
-                    const [carBrand, carModel, carYear] = key.split('/'); // Extract brand, model, and year
-                    if (!carGroups[carBrand]) {
-                        carGroups[carBrand] = {};
-                    }
-                    if (!carGroups[carBrand][carModel]) {
-                        carGroups[carBrand][carModel] = {};
-                    }
-                    if (!carGroups[carBrand][carModel][carYear]) {
-                        carGroups[carBrand][carModel][carYear] = [];
-                    }
-                    carGroups[carBrand][carModel][carYear].push(data[key]);
-                });
+        return structuredData;
+    }
 
-                // Create a block for each car brand
-                for (const [brand, models] of Object.entries(carGroups)) {
-                    const brandBlock = document.createElement('div');
-                    brandBlock.classList.add('brand-block');
+    function showBrands(data) {
+        // Clear the top section
+        topSection.innerHTML = '<h2>Марки авто:</h2>';
 
-                    const brandTitle = document.createElement('h3');
-                    brandTitle.textContent = brand;
-                    brandTitle.classList.add('brand-title');
-                    brandBlock.appendChild(brandTitle);
+        // Sort brands alphabetically
+        const sortedBrands = Object.keys(data).sort();
 
-                    const modelList = document.createElement('div');
-                    modelList.classList.add('model-list');
-                    modelList.style.display = 'none'; // Initially hidden
-
-                    for (const [model, years] of Object.entries(models)) {
-                        const modelBlock = document.createElement('div');
-                        modelBlock.classList.add('model-block');
-
-                        const modelTitle = document.createElement('h4');
-                        modelTitle.textContent = model;
-                        modelTitle.classList.add('model-title');
-                        modelBlock.appendChild(modelTitle);
-
-                        const yearList = document.createElement('div');
-                        yearList.classList.add('year-list');
-                        yearList.style.display = 'none'; // Initially hidden
-
-                        for (const [year, images] of Object.entries(years)) {
-                            const yearBlock = document.createElement('div');
-                            yearBlock.classList.add('year-block');
-
-                            const yearTitle = document.createElement('h5');
-                            yearTitle.textContent = year;
-                            yearTitle.classList.add('year-title');
-                            yearBlock.appendChild(yearTitle);
-
-                            const imageList = document.createElement('div');
-                            imageList.classList.add('image-list');
-                            imageList.style.display = 'none'; // Initially hidden
-
-                            images.forEach(imageUrl => {
-                                const img = document.createElement('img');
-                                img.src = imageUrl;
-                                img.alt = `${brand} ${model} ${year}`;
-                                img.style.width = '200px';
-                                img.style.margin = '10px';
-                                imageList.appendChild(img);
-                            });
-
-                            yearTitle.addEventListener('click', function() {
-                                imageList.style.display = imageList.style.display === 'none' ? 'block' : 'none';
-                            });
-
-                            yearBlock.appendChild(imageList);
-                            yearList.appendChild(yearBlock);
-                        }
-
-                        modelTitle.addEventListener('click', function() {
-                            yearList.style.display = yearList.style.display === 'none' ? 'block' : 'none';
-                        });
-
-                        modelBlock.appendChild(yearList);
-                        modelList.appendChild(modelBlock);
-                    }
-
-                    brandTitle.addEventListener('click', function() {
-                        modelList.style.display = modelList.style.display === 'none' ? 'block' : 'none';
-                    });
-
-                    brandBlock.appendChild(modelList);
-                    imageContainer.appendChild(brandBlock);
-                }
-            })
-            .catch(error => {
-                imageContainer.textContent = 'Error: ' + error.message;
+        // Create a button for each brand
+        sortedBrands.forEach(brand => {
+            const brandButton = document.createElement('button');
+            brandButton.textContent = brand;
+            brandButton.addEventListener('click', function () {
+                showModels(data[brand], brand);
             });
-    });
+            topSection.appendChild(brandButton);
+        });
+
+        // Clear the middle, year, and bottom sections
+        middleSection.innerHTML = '';
+        yearSection.innerHTML = '';
+        bottomSection.innerHTML = '';
+    }
+
+    function showModels(brandData, brand) {
+        // Clear the middle section
+        middleSection.innerHTML = `<h2>Моделі для марки: ${brand}</h2>`;
+
+        // Sort models alphabetically
+        const sortedModels = Object.keys(brandData).sort();
+
+        // Create a button for each model
+        sortedModels.forEach(model => {
+            const modelButton = document.createElement('button');
+            modelButton.textContent = model;
+            modelButton.addEventListener('click', function () {
+                showYears(brandData[model], brand, model);
+            });
+            middleSection.appendChild(modelButton);
+        });
+
+        // Clear the year and bottom sections
+        yearSection.innerHTML = '';
+        bottomSection.innerHTML = '';
+    }
+
+    function showYears(modelData, brand, model) {
+        // Clear the year section
+        yearSection.innerHTML = `<h2>Роки для моделі: ${model} (${brand})</h2>`;
+
+        // Create a button for each year
+        Object.keys(modelData).forEach(year => {
+            const yearButton = document.createElement('button');
+            yearButton.textContent = year;
+            yearButton.addEventListener('click', function () {
+                showImages(modelData[year], brand, model, year);
+            });
+            yearSection.appendChild(yearButton);
+        });
+
+        // Clear the bottom section
+        bottomSection.innerHTML = '';
+    }
+
+    function showImages(images, brand, model, year) {
+        // Clear the bottom section
+        bottomSection.innerHTML = `<h2>Фото для ${brand} ${model} (${year}):</h2>`;
+
+        // Display all images for the selected year
+        const imageContainer = document.createElement('div');
+        imageContainer.style.display = 'flex';
+        imageContainer.style.flexWrap = 'wrap';
+        imageContainer.style.justifyContent = 'center';
+        imageContainer.style.gap = '10px';
+
+        images.forEach(imageUrl => {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `${brand} ${model} ${year}`;
+            img.style.maxWidth = '300px'; // Limit image size
+            img.style.maxHeight = '200px'; // Prevent overflow
+            img.style.objectFit = 'cover';
+
+            // Hide the image if it fails to load
+            img.onerror = function () {
+                img.style.display = 'none';
+                console.warn(`Image not found: ${imageUrl}`);
+            };
+
+            imageContainer.appendChild(img);
+        });
+
+        bottomSection.appendChild(imageContainer);
+    }
 });
