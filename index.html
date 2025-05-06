@@ -7,8 +7,29 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <div id="headerContainer">
+        <button id="catalogButton">Car Catalog</button>
+        <h1 id="headerTitle" style="display: none;">Car Catalog</h1>
+    </div>
+    <div class="menu" id="brandMenu">
+        <ul id="brandList">
+            <!-- Список марок буде додано динамічно -->
+        </ul>
+    </div>
+    <div class="menu" id="modelMenu" style="left: -200px;">
+        <ul id="modelList">
+            <!-- Список моделей буде додано динамічно -->
+        </ul>
+    </div>
+    <div class="menu" id="yearMenu" style="left: -200px;">
+        <ul id="yearList">
+            <!-- Список років буде додано динамічно -->
+        </ul>
+    </div>
     <div class="center-block">
         <div id="outputField"></div> <!-- Контейнер для виводу -->
+        <div id="outputField"></div>
+        <div id="photoContainer"></div>
     </div>
     <script src="js/script.js"></script>
 </body>

@@ -1,144 +1,164 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const output = document.getElementById('outputField');
-    const topSection = document.createElement('div'); // Верхня секція для вибору марки
-    const middleSection = document.createElement('div'); // Середня секція для вибору моделей
-    const yearSection = document.createElement('div'); // Секція для вибору років
-    const bottomSection = document.createElement('div'); // Нижня секція для відображення фото
-    output.appendChild(topSection);
-    output.appendChild(middleSection);
-    output.appendChild(yearSection);
-    output.appendChild(bottomSection);
+    const brandMenu = document.getElementById('brandMenu');
+    const modelMenu = document.getElementById('modelMenu');
+    const yearMenu = document.getElementById('yearMenu');
+    const brandList = document.getElementById('brandList');
+    const modelList = document.getElementById('modelList');
+    const yearList = document.getElementById('yearList');
+    const photoContainer = document.getElementById('photoContainer');
+    const catalogButton = document.getElementById('catalogButton');
+    const headerContainer = document.getElementById('headerContainer');
+    const headerTitle = document.getElementById('headerTitle');
 
-    // Fetch data from sample.json on page load
+    catalogButton.addEventListener('click', () => {
+        // Додаємо клас для зменшення контейнера
+        headerContainer.classList.add('minimized');
+        // Ховаємо кнопку
+        catalogButton.style.display = 'none';
+        // Показуємо текст
+        headerTitle.style.display = 'block';
+    });
+
     fetch('js/image_sources.json')
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error('Failed to fetch JSON');
             }
             return response.json();
         })
         .then(data => {
-            // Process the data and display brands
-            const parsedData = parseData(data);
-            showBrands(parsedData);
+            const carData = {};
+
+            // Парсинг даних у структурований формат
+            for (const [key, imageUrl] of Object.entries(data)) {
+                const [brand, model, year] = key.split('/');
+                if (!carData[brand]) carData[brand] = {};
+                if (!carData[brand][model]) carData[brand][model] = {};
+                if (!carData[brand][model][year]) carData[brand][model][year] = [];
+                carData[brand][model][year].push(imageUrl);
+            }
+
+            // Додавання марок у меню
+            populateBrands(carData);
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            bottomSection.innerHTML = `<p style="color: red;">Не вдалося завантажити дані. Перевірте файл sample.json.</p>`;
+            console.error('Error loading JSON:', error);
         });
 
-    // Parse the JSON data into a structured format
-    function parseData(data) {
-        const structuredData = {};
+    function populateBrands(carData) {
+        brandList.innerHTML = ''; // Очищення списку
 
-        Object.keys(data).forEach(key => {
-            const [brand, model, year, photo] = key.split('/');
-            if (!structuredData[brand]) {
-                structuredData[brand] = {};
-            }
-            if (!structuredData[brand][model]) {
-                structuredData[brand][model] = {};
-            }
-            if (!structuredData[brand][model][year]) {
-                structuredData[brand][model][year] = [];
-            }
-            structuredData[brand][model][year].push(data[key]);
-        });
-
-        return structuredData;
+        for (const brand of Object.keys(carData).sort()) {
+            const li = document.createElement('li');
+            li.textContent = brand;
+            li.classList.add('brand-item'); // Додаємо клас для стилізації
+            li.addEventListener('click', () => {
+                toggleModels(carData[brand], brand);
+            });
+            brandList.appendChild(li);
+        }
     }
 
-    function showBrands(data) {
-        // Clear the top section
-        topSection.innerHTML = '<h2>Марки авто:</h2>';
-
-        // Sort brands alphabetically
-        const sortedBrands = Object.keys(data).sort();
-
-        // Create a button for each brand
-        sortedBrands.forEach(brand => {
-            const brandButton = document.createElement('button');
-            brandButton.textContent = brand;
-            brandButton.addEventListener('click', function () {
-                showModels(data[brand], brand);
-            });
-            topSection.appendChild(brandButton);
-        });
-
-        // Clear the middle, year, and bottom sections
-        middleSection.innerHTML = '';
-        yearSection.innerHTML = '';
-        bottomSection.innerHTML = '';
+    function toggleModels(models, brand) {
+        if (modelMenu.style.left === '200px') {
+            // Якщо меню моделей відкрите, закриваємо його
+            closeAllMenus();
+        } else {
+            // Закриваємо всі вкладки перед відкриттям нової
+            closeAllMenus();
+            showModels(models, brand);
+        }
     }
 
-    function showModels(brandData, brand) {
-        // Clear the middle section
-        middleSection.innerHTML = `<h2>Моделі для марки: ${brand}</h2>`;
+    function showModels(models, brand) {
+        console.log('Selected brand:', brand); // Відладка
+        modelList.innerHTML = ''; // Очищення списку моделей
+        yearList.innerHTML = ''; // Очищення списку років
+        photoContainer.innerHTML = ''; // Очищення фотографій
+        modelMenu.style.left = '200px'; // Висуваємо меню моделей
+        yearMenu.style.left = '-200px'; // Ховаємо меню років
 
-        // Sort models alphabetically
-        const sortedModels = Object.keys(brandData).sort();
-
-        // Create a button for each model
-        sortedModels.forEach(model => {
-            const modelButton = document.createElement('button');
-            modelButton.textContent = model;
-            modelButton.addEventListener('click', function () {
-                showYears(brandData[model], brand, model);
+        for (const model of Object.keys(models).sort()) {
+            const li = document.createElement('li');
+            li.textContent = model;
+            li.classList.add('model-item'); // Додаємо клас для стилізації
+            li.addEventListener('click', () => {
+                toggleYears(models[model], brand, model);
             });
-            middleSection.appendChild(modelButton);
-        });
-
-        // Clear the year and bottom sections
-        yearSection.innerHTML = '';
-        bottomSection.innerHTML = '';
+            modelList.appendChild(li);
+        }
     }
 
-    function showYears(modelData, brand, model) {
-        // Clear the year section
-        yearSection.innerHTML = `<h2>Роки для моделі: ${model} (${brand})</h2>`;
+    function toggleYears(years, brand, model) {
+        if (yearMenu.style.left === '400px') {
+            // Якщо меню років відкрите, закриваємо його
+            yearMenu.style.left = '-200px';
+            yearList.innerHTML = ''; // Очищення списку років
+        } else {
+            // Відкриваємо меню років
+            showYears(years, brand, model);
+        }
+    }
 
-        // Create a button for each year
-        Object.keys(modelData).forEach(year => {
-            const yearButton = document.createElement('button');
-            yearButton.textContent = year;
-            yearButton.addEventListener('click', function () {
-                showImages(modelData[year], brand, model, year);
+    function showYears(years, brand, model) {
+        console.log('Selected model:', model); // Відладка
+        console.log('Available years:', years); // Перевірка, чи є роки
+        yearList.innerHTML = ''; // Очищення списку років
+        photoContainer.innerHTML = ''; // Очищення фотографій
+        yearMenu.style.left = '400px'; // Висуваємо меню років
+
+        for (const year of Object.keys(years).sort()) {
+            const li = document.createElement('li');
+            li.textContent = year;
+            li.classList.add('year-item'); // Додаємо клас для стилізації
+            li.addEventListener('click', () => {
+                console.log('Year clicked:', year); // Відладка
+                console.log('Images for year:', years[year]); // Перевірка зображень
+                showImages(years[year], brand, model, year);
             });
-            yearSection.appendChild(yearButton);
-        });
-
-        // Clear the bottom section
-        bottomSection.innerHTML = '';
+            yearList.appendChild(li);
+        }
     }
 
     function showImages(images, brand, model, year) {
-        // Clear the bottom section
-        bottomSection.innerHTML = `<h2>Фото для ${brand} ${model} (${year}):</h2>`;
+        if (!photoContainer) {
+            console.error('Error: photoContainer element is not found in the DOM.');
+            return;
+        }
 
-        // Display all images for the selected year
-        const imageContainer = document.createElement('div');
-        imageContainer.style.display = 'flex';
-        imageContainer.style.flexWrap = 'wrap';
-        imageContainer.style.justifyContent = 'center';
-        imageContainer.style.gap = '10px';
+        console.log('Selected year:', year); // Відладка
+        console.log('Images array:', images); // Перевірка масиву зображень
+        photoContainer.innerHTML = `<h2>${brand} ${model} ${year}</h2>`; // Заголовок для вибраного року
 
-        images.forEach(imageUrl => {
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = `${brand} ${model} ${year}`;
-            img.style.maxWidth = '300px'; // Limit image size
-            img.style.maxHeight = '200px'; // Prevent overflow
-            img.style.objectFit = 'cover';
+        if (images && images.length > 0) {
+            images.forEach(imageUrl => {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = `${brand} ${model} ${year}`;
+                img.style.width = '200px'; // Фіксована ширина
+                img.style.height = '150px'; // Фіксована висота
+                img.style.objectFit = 'cover'; // Збереження пропорцій з обрізанням
+                img.style.border = '2px solid #FFC0CB'; // Світло-рожева рамка
+                img.style.borderRadius = '8px'; // Закруглені краї
+                img.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // Тінь
 
-            // Hide the image if it fails to load
-            img.onerror = function () {
-                img.style.display = 'none';
-                console.warn(`Image not found: ${imageUrl}`);
-            };
+                img.onerror = () => {
+                    console.warn(`Image not found: ${imageUrl}`);
+                    img.style.display = 'none'; // Ховаємо зображення, якщо воно не завантажується
+                };
 
-            imageContainer.appendChild(img);
-        });
+                photoContainer.appendChild(img);
+            });
+        } else {
+            photoContainer.innerHTML += '<p>Немає доступних фотографій для цього року.</p>';
+        }
+    }
 
-        bottomSection.appendChild(imageContainer);
+    function closeAllMenus() {
+        modelMenu.style.left = '-200px';
+        yearMenu.style.left = '-200px';
+        modelList.innerHTML = ''; // Очищення списку моделей
+        yearList.innerHTML = ''; // Очищення списку років
+        photoContainer.innerHTML = ''; // Очищення фотографій
     }
 });

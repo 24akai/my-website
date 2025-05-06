@@ -1,43 +1,238 @@
 body {
+    background-color: #F8F0FF; /* Світло-ліловий фон */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    background-color: #f9f9f9;
 }
 
+/* Видаляємо або змінюємо стиль для .center-block */
 .center-block {
-    text-align: center;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 90%;
-    overflow: auto;
+    display: none; /* Приховуємо білий блок */
 }
 
 button {
-    margin: 5px;
+    position: fixed;
+    left: -150px; /* Початкове положення за межами екрана */
+    top: 20px;
+    margin: 10px 0;
     padding: 10px 20px;
     cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    transition: background-color 0.3s;
+    border: none;
+    border-radius: 0 10px 10px 0; /* Закруглення правого боку */
+    background: linear-gradient(45deg, #6A0DAD, #9370DB); /* Градієнт фіолетових кольорів */
+    color: #FFFFFF; /* Білий текст */
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Тінь */
+    transition: left 0.3s ease, background 0.3s ease;
 }
 
 button:hover {
-    background-color: #ddd;
+    left: 0; /* Висувається на екран */
+    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Яскравіший градієнт */
 }
 
+button:active {
+    transform: scale(0.95); /* Легке зменшення при натисканні */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Менша тінь */
+}
+
+/* Контейнер для фотографій */
+#outputField {
+    position: fixed;
+    top: 0;
+    left: 600px; /* Розташування праворуч від меню років */
+    right: 0; /* До кінця вікна */
+    height: 100%;
+    overflow-y: auto; /* Прокрутка, якщо фотографій багато */
+    background: #f9f9f9; /* Світлий фон */
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Тінь зліва */
+    display: flex;
+    flex-wrap: wrap; /* Розташування фотографій у рядках */
+    gap: 10px; /* Відстань між фотографіями */
+    align-content: flex-start; /* Вирівнювання фотографій зверху */
+}
+
+/* Новий контейнер для фотографій */
+#photoContainer {
+    position: fixed;
+    top: 0;
+    left: 600px; /* Початок після меню років */
+    right: 0; /* До кінця вікна */
+    height: 100%;
+    overflow-y: auto; /* Прокрутка, якщо фотографій багато */
+    background: #f9f9f9; /* Світлий фон */
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Тінь зліва */
+    display: flex;
+    flex-wrap: wrap; /* Розташування фотографій у рядках */
+    gap: 10px; /* Відстань між фотографіями */
+    align-content: flex-start; /* Вирівнювання фотографій зверху */
+}
+
+/* Стиль для фотографій */
 #outputField img {
     display: block;
     margin: 10px auto;
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
+    width: 200px; /* Фіксована ширина */
+    height: 150px; /* Фіксована висота */
+    object-fit: cover; /* Збереження пропорцій з обрізанням */
+    border: 2px solid #FFC0CB; /* Світло-рожева рамка */
+    border-radius: 8px; /* Закруглені краї рамки */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для фотографій */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Ефект при наведенні */
+#outputField img:hover {
+    transform: scale(1.05); /* Легке збільшення при наведенні */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Глибша тінь при наведенні */
+}
+
+/* Загальний стиль для меню */
+.menu {
+    position: fixed;
+    top: 60px; /* Відступ вниз на висоту заголовка */
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background: linear-gradient(45deg, #6A0DAD, #9370DB); /* Градієнт фіолетових кольорів */
+    color: #FFFFFF;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    z-index: 1000;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold; /* Жирний шрифт */
+}
+
+/* Стиль для списків */
+.menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu ul li {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 16px; /* Збільшений розмір шрифту */
+    text-transform: uppercase; /* Великі літери */
+}
+
+/* Ефект при наведенні */
+.menu ul li:hover {
+    background: rgba(255, 255, 255, 0.2); /* Світліший фон */
+    transform: scale(1.05); /* Легке збільшення */
+}
+
+/* Стиль для посилань у меню */
+.menu ul li a {
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: bold; /* Жирний текст */
+    display: block;
+}
+
+/* Підменю (моделі та роки) */
+#modelMenu {
+    position: fixed;
+    top: 0;
+    left: -200px; /* Початково приховане */
+    width: 200px;
+    height: 100%;
+    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Градієнт для підменю */
+    color: #FFFFFF;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    overflow-y: auto; /* Додаємо вертикальну прокрутку */
+    z-index: 999;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold; /* Жирний шрифт */
+}
+
+#yearMenu {
+    position: fixed;
+    top: 0;
+    left: -200px; /* Початково приховані */
+    width: 200px;
+    height: 100%;
+    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Інший градієнт для підменю */
+    color: #FFFFFF;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    z-index: 999;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold; /* Жирний шрифт */
+}
+
+/* Висування підменю */
+#modelMenu.active, #yearMenu.active {
+    left: 200px; /* Висувається праворуч від основного меню */
+}
+
+/* Початковий стиль для контейнера */
+#headerContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* Займає весь екран */
+    background: linear-gradient(45deg, #4B0082, #6A0DAD); /* Темно-фіолетовий градієнт */
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001; /* Вище за меню */
+    transition: height 0.5s ease, top 0.5s ease; /* Анімація при зміні розміру */
+}
+
+/* Зменшений стиль для контейнера */
+#headerContainer.minimized {
+    height: 60px; /* Висота після зменшення */
+    top: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Стиль для кнопки */
+#catalogButton {
+    position: absolute; /* Абсолютне позиціонування для центрування */
+    top: 50%; /* Центрування по вертикалі */
+    left: 50%; /* Центрування по горизонталі */
+    transform: translate(-50%, -50%); /* Зміщення для точного центрування */
+    background: linear-gradient(45deg, #6A0DAD, #9370DB); /* Градієнт кнопки */
+    color: #FFFFFF;
+    font-size: 48px; /* Збільшений розмір шрифту (вдвічі більше) */
+    font-weight: bold;
+    padding: 30px 60px; /* Збільшені відступи */
+    border: none;
+    border-radius: 12px; /* Закруглені краї */
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Тінь */
+    transition: transform 0.15s ease, background 0.15s ease; /* Швидша анімація */
+}
+
+/* Ефект при наведенні на кнопку */
+#catalogButton:hover {
+    transform: translate(-50%, -50%) scale(1.1); /* Легке збільшення */
+    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Яскравіший градієнт */
+}
+
+/* Стиль для тексту після зменшення */
+#headerTitle {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: none; /* Початково приховано */
+    transition: opacity 0.5s ease;
+}
+
+/* Зміщення меню вниз після зменшення контейнера */
+.menu {
+    top: 60px; /* Відступ вниз на висоту заголовка */
 }
