@@ -57,18 +57,37 @@ button:active {
 /* Новий контейнер для фотографій */
 #photoContainer {
     position: fixed;
-    top: 0;
-    left: 600px; /* Початок після меню років */
-    right: 0; /* До кінця вікна */
-    height: 100%;
-    overflow-y: auto; /* Прокрутка, якщо фотографій багато */
-    background: #f9f9f9; /* Світлий фон */
-    padding: 20px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Тінь зліва */
-    display: flex;
-    flex-wrap: wrap; /* Розташування фотографій у рядках */
-    gap: 10px; /* Відстань між фотографіями */
-    align-content: flex-start; /* Вирівнювання фотографій зверху */
+    top: 60px;
+    left: 600px; /* 0 + 200 (марки) + 200 (моделі) + 200 (роки) */
+    width: calc(100vw - 600px);
+    min-height: 200px;
+    padding: 32px 24px 24px 24px;
+    background: linear-gradient(120deg, #f8e6ff 0%, #ffe6fa 100%);
+    color: #3d0066;
+    z-index: 998;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border-radius: 16px 0 0 16px;
+    box-shadow: 0 4px 24px rgba(106, 13, 173, 0.10), 0 1.5px 0 #FFC0CB inset;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+#photoContainer h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #6A0DAD;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px #fff6, 0 1px 0 #fff;
+}
+
+#photoContainer p {
+    color: #a14bb8;
+    font-size: 1.1rem;
+    margin-top: 16px;
+    text-align: center;
 }
 
 /* Стиль для фотографій */
@@ -93,7 +112,7 @@ button:active {
 /* Загальний стиль для меню */
 .menu {
     position: fixed;
-    top: 60px; /* Відступ вниз на висоту заголовка */
+    top: 60px; /* або більше, якщо ваш headerTitle вищий */
     left: 0;
     width: 200px;
     height: 100%;
@@ -101,7 +120,7 @@ button:active {
     color: #FFFFFF;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 1002;
     font-family: 'Arial', sans-serif;
     font-weight: bold; /* Жирний шрифт */
 }
@@ -136,37 +155,37 @@ button:active {
     display: block;
 }
 
-/* Підменю (моделі та роки) */
-#modelMenu {
+/* Меню марок */
+#brandMenu {
     position: fixed;
-    top: 0;
-    left: -200px; /* Початково приховане */
+    top: 60px;
+    left: 0;
     width: 200px;
     height: 100%;
-    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Градієнт для підменю */
-    color: #FFFFFF;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    transition: left 0.3s ease;
-    overflow-y: auto; /* Додаємо вертикальну прокрутку */
     z-index: 999;
-    font-family: 'Arial', sans-serif;
-    font-weight: bold; /* Жирний шрифт */
+    /* ...інші стилі... */
 }
 
-#yearMenu {
+/* Меню моделей */
+#modelMenu {
     position: fixed;
-    top: 0;
-    left: -200px; /* Початково приховані */
+    top: 60px;
+    left: -200px; /* Початково сховано */
     width: 200px;
     height: 100%;
-    background: linear-gradient(45deg, #8A2BE2, #BA55D3); /* Інший градієнт для підменю */
-    color: #FFFFFF;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    transition: left 0.3s ease;
-    overflow-y: auto;
     z-index: 999;
-    font-family: 'Arial', sans-serif;
-    font-weight: bold; /* Жирний шрифт */
+    /* ...інші стилі... */
+}
+
+/* Меню років — праворуч від моделей */
+#yearMenu {
+    position: fixed;
+    top: 60px;
+    left: -200px; /* Початково сховано */
+    width: 200px;
+    height: 100%;
+    z-index: 999;
+    /* ...інші стилі... */
 }
 
 /* Висування підменю */
@@ -180,13 +199,13 @@ button:active {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; /* Займає весь екран */
+    height: 100vh; /* Це може перекривати все! */
     background: linear-gradient(45deg, #4B0082, #6A0DAD); /* Темно-фіолетовий градієнт */
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1001; /* Вище за меню */
+    z-index: 1001; /* Вище за меню і фото */
     transition: height 0.5s ease, top 0.5s ease; /* Анімація при зміні розміру */
 }
 
@@ -224,6 +243,11 @@ button:active {
 
 /* Стиль для тексту після зменшення */
 #headerTitle {
+    position: relative;
+    z-index: 1;
+    background: transparent; /* Прозорий фон */
+    margin-bottom: 10px;
+    padding: 10px 0;
     font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
@@ -235,4 +259,9 @@ button:active {
 /* Зміщення меню вниз після зменшення контейнера */
 .menu {
     top: 60px; /* Відступ вниз на висоту заголовка */
+    z-index: 2;
+}
+
+#photoContainer.closed {
+    display: none !important;
 }
